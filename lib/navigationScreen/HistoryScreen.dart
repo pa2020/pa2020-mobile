@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noticetracker/Request.dart';
 import 'package:noticetracker/State.dart';
-import 'package:noticetracker/history_card_widget.dart';
+import 'package:noticetracker/navigationScreen/history_card_widget.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override
