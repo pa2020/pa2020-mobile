@@ -2,5 +2,6 @@
 enum SharedPrefEnum {
   username,
   password,
-  token
+  token,
+  id,
 }
