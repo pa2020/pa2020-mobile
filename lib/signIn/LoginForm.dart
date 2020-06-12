@@ -1,9 +1,10 @@
 
-class LoginDto {
-  String _username;
-  String _password;
+class LoginForm {
 
-  LoginDto(this._username, this._password);
+  String _password;
+  String _username;
+
+  LoginForm(this._password, this._username);
 
   String get password => _password;
 
@@ -19,8 +20,7 @@ class LoginDto {
 
   @override
   String toString() {
-    return 'LoginDto{_username: $_username, _password: $_password}';
+    return 'LoginForm{_password: $_password, _username: $_username}';
   }
-
 
 }

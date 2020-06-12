@@ -1,9 +1,6 @@
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
-import 'package:noticetracker/enumerate/SharedPrefEnum.dart';
-import 'package:noticetracker/user/LoginDto.dart';
+import 'package:noticetracker/signIn/LoginForm.dart';
 import 'package:noticetracker/user/UserService.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
 
@@ -13,12 +10,13 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen>{
   bool _rememberMe = false;
-  String _username;
-  String _password;
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
-    checkIfUserAlreadyLoggedIn();
+    UserService.checkIfUserAlreadyLoggedIn(context);
 
     return Scaffold(
       resizeToAvoidBottomPadding : false,
@@ -62,11 +60,7 @@ class _SignInScreenState extends State<SignInScreen>{
                             contentPadding: const EdgeInsets.all(10),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.white))
                         ),
-                        onSaved: (String value){
-                          setState(() {
-                            _username=value;
-                          });
-                        },
+                        controller: usernameController,
 
                       )
                     ],
@@ -96,12 +90,7 @@ class _SignInScreenState extends State<SignInScreen>{
                             contentPadding: const EdgeInsets.all(10),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.white))
                         ),
-                          onSaved: (String value){
-                            setState(() {
-                              _password=value;
-                            });
-                          }
-
+                        controller: passwordController,
                       ),
 
                     ],
@@ -143,11 +132,29 @@ class _SignInScreenState extends State<SignInScreen>{
                   child: RaisedButton(
                     padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 50.0),
                     onPressed: () {
-                      logUser();
+                      UserService.logUser(new LoginForm(passwordController.text, usernameController.text), context);
                     } ,
                     color: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     child: Text("LOG IN", style: TextStyle(color: Color(0xFF21f3e7), fontSize: 20),),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text("- OR -",
+                    style: TextStyle(color :Colors.white),),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: 5),
+                  child: FlatButton(
+                    onPressed: (){
+                      Navigator.of(context).pushNamed("/signUp");
+                  },
+                    child: Text(
+                        "Register a user",
+                        style: TextStyle(color: Colors.white)),
                   ),
                 )
               ],
@@ -156,28 +163,5 @@ class _SignInScreenState extends State<SignInScreen>{
         ],
       ),
     );
-  }
-
-  Future<void> logUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(EnumToString.parse(SharedPrefEnum.username), _username);
-    prefs.setString(EnumToString.parse(SharedPrefEnum.password), _password);
-    Navigator.of(context).pushNamed("/home");
-
-  }
-
-  Future<void> checkIfUserAlreadyLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString(EnumToString.parse(SharedPrefEnum.token));
-    if(token==null)
-      return;
-    String username = prefs.getString(EnumToString.parse(SharedPrefEnum.username));
-    if(username==null)
-      return;
-    String password = prefs.getString(EnumToString.parse(SharedPrefEnum.password));
-    if(password==null)
-      return;
-
-    UserService.loginUser(new LoginDto(username, password));
   }
 }
