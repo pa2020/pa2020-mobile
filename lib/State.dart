@@ -1,6 +1,6 @@
 
 enum States  {
-  WAITING,
-  PROCESSING,
-  DONE
+  INIT,
+  RUNNING,
+  FINISH
 }

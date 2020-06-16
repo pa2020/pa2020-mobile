@@ -16,7 +16,7 @@ dependencies:
   enum_to_string: ^1.0.9
   http: ^0.12.1
   fluttertoast: ^4.0.0
-
+  flutter_spinkit: "^4.1.2"
 
 
 dev_dependencies:

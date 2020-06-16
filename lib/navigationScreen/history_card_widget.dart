@@ -1,6 +1,7 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:noticetracker/Request.dart';
+import 'package:noticetracker/request/AnalyzeRequest.dart';
 import 'package:noticetracker/State.dart';
 
 
@@ -8,12 +9,11 @@ class HistoryCard {
 
 
 
-  Widget requestTemplate(Request req) {
+  Widget requestTemplate(AnalyzedRequest req) {
     AssetImage img = formatImage(req);
 
     String date = formatDate(req.createdAt);
 
-    String status = formatStatus(req.state);
     return Container(
       decoration : BoxDecoration(
         border: Border.all(),
@@ -53,7 +53,7 @@ class HistoryCard {
                       ),
                     ),
                     Text(
-                      status,
+                      req.state,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontStyle: FontStyle.italic,
@@ -76,8 +76,8 @@ class HistoryCard {
           +" at "+date.hour.toString()+":"+date.minute.toString();
     }
 
-    AssetImage formatImage(Request req){
-      if (req.state == States.DONE) {
+    AssetImage formatImage(AnalyzedRequest req){
+      if (req.state == EnumToString.parse(States.FINISH)) {
         if (req.negative) {
           return AssetImage('assets/sentiment_meter_negative.png');
         } else if (req.positivy) {

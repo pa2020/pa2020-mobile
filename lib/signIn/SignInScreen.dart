@@ -19,6 +19,9 @@ class _SignInScreenState extends State<SignInScreen>{
     UserService.checkIfUserAlreadyLoggedIn(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: new Center(child: new Text("Sign In", style: TextStyle(fontSize: 25),textAlign: TextAlign.center,))
+      ),
       resizeToAvoidBottomPadding : false,
       body: Stack(
         children: <Widget>[
@@ -30,15 +33,9 @@ class _SignInScreenState extends State<SignInScreen>{
             ),
           ),
           Container(
-            padding: EdgeInsets.only(
-                left: 20.0,
-                right: 20.0,
-                top: 50.0
-            ),
+            padding: EdgeInsets.all(10),
             child: Column(
               children: <Widget>[
-                Text("Sign In",
-                    style: TextStyle(color :Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 0.0),
@@ -132,7 +129,9 @@ class _SignInScreenState extends State<SignInScreen>{
                   child: RaisedButton(
                     padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 50.0),
                     onPressed: () {
-                      UserService.logUser(new LoginForm(passwordController.text, usernameController.text), context);
+                      UserService.logUser(new LoginForm(passwordController.text, usernameController.text), _rememberMe,context).whenComplete(() => {
+                        
+                      });
                     } ,
                     color: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -163,5 +162,12 @@ class _SignInScreenState extends State<SignInScreen>{
         ],
       ),
     );
+  }
+
+  startSpinner(){
+
+  }
+  stopSpinner(){
+
   }
 }

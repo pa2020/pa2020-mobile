@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:noticetracker/State.dart';
 
-class Request {
-  States _state;
+class AnalyzedRequest {
+  int _id;
+  String _state;
   DateTime _createdAt;
   String _sentence;
   bool _positivy;
   bool _neutral;
   bool _negative;
 
-  Request(this._state, this._createdAt, this._sentence, this._positivy,
+  AnalyzedRequest(this._state, this._createdAt, this._sentence, this._positivy,
       this._neutral, this._negative);
+
+
+  AnalyzedRequest.withId(this._id, this._state, this._createdAt, this._sentence,
+      this._positivy, this._neutral, this._negative);
 
   bool get negative => _negative;
 
@@ -42,10 +47,16 @@ class Request {
     _createdAt = value;
   }
 
-  States get state => _state;
+  String get state => _state;
 
-  set state(States value) {
+  set state(String value) {
     _state = value;
+  }
+
+  int get id => _id;
+
+  set id(int value) {
+    _id = value;
   }
 
 

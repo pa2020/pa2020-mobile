@@ -27,6 +27,9 @@ class _SignUpScreenState extends State<SignUpScreen>{
   Widget build(BuildContext context) {
 
     return Scaffold(
+        appBar: AppBar(
+            title: new Center(child: new Text("Register", style: TextStyle(fontSize: 25),textAlign: TextAlign.center,))
+        ),
         body: Container(
           decoration: BoxDecoration(
               gradient: new LinearGradient(colors:[Colors.blue,
@@ -38,15 +41,9 @@ class _SignUpScreenState extends State<SignUpScreen>{
               scrollDirection: Axis.vertical,
               children: <Widget>[
                 Container(
-                    padding: EdgeInsets.only(
-                        left: 20.0,
-                        right: 20.0,
-                        top: 50.0
-                    ),
+                    padding: EdgeInsets.all(10),
                     child: Column(
                       children: <Widget>[
-                        Text("Register",
-                            style: TextStyle(color :Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
                         Container(
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.only(top: 30),

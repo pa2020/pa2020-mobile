@@ -10,34 +10,26 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  UserDto userInfo = retrieveUserInfo();
+  UserDto userInfo;
 
   final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
   final emailController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
 
-  bool _obscureTextPwd = true;
-  bool _modifying = false;
 
   @override
   Widget build(BuildContext context) {
+    retrieveUserInfo();
     return Scaffold(
         body: Container(
           child: ListView(
               scrollDirection: Axis.vertical,
               children: <Widget>[
                 Container(
-                    padding: EdgeInsets.only(
-                        left: 20.0,
-                        right: 20.0,
-                        top: 50.0
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     child: Column(
                       children: <Widget>[
-                        Text("User Profile",
-                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                         Container(
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.only(top: 30),
@@ -49,50 +41,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.white10,
                               ),
                               TextFormField(
-                                enabled: !_modifying,
+                                enabled: false,
                                 decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.person,
                                       color: Colors.black,),
-                                    hintText: "Enter your username",
+                                    hintText: "Username",
                                     hintStyle: TextStyle(color: Colors.black54),
                                     contentPadding: const EdgeInsets.all(10),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.black))
                                 ),
                                 controller: usernameController,
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("Password"),
-                              Divider(
-                                color: Colors.white10,
-                              ),
-                              TextFormField(
-                                enabled: !_modifying,
-                                obscureText: _obscureTextPwd,
-                                decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.lock,
-                                      color: Colors.black,),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(_obscureTextPwd ? Icons.visibility : Icons.visibility_off),
-                                      onPressed: (){
-                                        setState(() {
-                                          _obscureTextPwd=!_obscureTextPwd;
-                                        });
-                                      },
-                                    ),
-                                    hintText: "Enter your password",
-                                    hintStyle: TextStyle(color: Colors.black54),
-                                    contentPadding: const EdgeInsets.all(10),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.black))
-                                ),
-                                controller: passwordController,
                               ),
                             ],
                           ),
@@ -108,7 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.white10,
                               ),
                               TextFormField(
-                                enabled: !_modifying,
                                 decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.mail_outline,
                                       color: Colors.black,),
@@ -133,7 +90,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.white10,
                               ),
                               TextFormField(
-                                enabled: !_modifying,
                                 decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.person_outline,
                                       color: Colors.black,),
@@ -158,7 +114,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.white10,
                               ),
                               TextFormField(
-                                enabled: !_modifying,
                                 decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.person_outline,
                                       color: Colors.black,),
@@ -175,29 +130,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           alignment: Alignment.center,
                           padding: EdgeInsets.symmetric(vertical: 15),
-                          child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 50.0),
-                            onPressed: () {
-                              if(oneFieldIsEMpty()){
-                                Fluttertoast.showToast(msg: "You can't have a blank field");
-                              }
-                              else if(!RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                                  .hasMatch(emailController.text)){
-                                Fluttertoast.showToast(msg: "Please enter a valid mail address");
-                              }
-                              else {
-                                UserService.updateProfile(new UserDto(
-                                    emailController.text,
-                                    firstNameController.text,
-                                    lastNameController.text,
-                                    passwordController.text,
-                                    userInfo.role,
-                                    usernameController.text));
-                              }
-                            } ,
-                            color: Color(0xFF21f3e7),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                            child: Text("Modify", style: TextStyle(color: Colors.white, fontSize: 15),),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                child: RaisedButton(
+                                  padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 15.0),
+                                  onPressed: () {
+                                    if(oneFieldIsEMpty()){
+                                      Fluttertoast.showToast(msg: "You can't have a blank field");
+                                    }
+                                    else if(!RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                                        .hasMatch(emailController.text)){
+                                      Fluttertoast.showToast(msg: "Please enter a valid mail address");
+                                    }
+                                    else {
+                                      try {
+                                        UserService.updateProfile(new UserDto(
+                                            emailController.text,
+                                            firstNameController.text,
+                                            lastNameController.text, "", [""],
+                                            ""));
+
+                                      } on Exception catch(e){
+                                        Fluttertoast.showToast(msg: e.toString());
+                                        retrieveUserInfo();
+                                      }
+                                    }
+                                  } ,
+                                  color: Color(0xFF21f3e7),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                  child: Text("Modify", style: TextStyle(color: Colors.white, fontSize: 15),),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                child: RaisedButton(
+                                  padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 15.0),
+                                  onPressed: () {
+                                    Fluttertoast.showToast(msg: "Disconnecting");
+                                    UserService.logout(context);
+                                  } ,
+                                  color: Colors.red,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                  child: Text("Disconnect", style: TextStyle(color: Colors.white, fontSize: 15),),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],)
@@ -211,13 +191,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
   bool oneFieldIsEMpty(){
-    return usernameController.text.isEmpty && passwordController.text.isEmpty &&
-        emailController.text.isEmpty &&
-        firstNameController.text.isEmpty && lastNameController.text.isEmpty;
+    return emailController.text.isEmpty &&
+        firstNameController.text.isEmpty &&
+        lastNameController.text.isEmpty;
   }
 
-  static UserDto retrieveUserInfo() {
-    //return await UserService.getUserInfo();
-    return new UserDto("email@mail", "firsname", "lastname", "123456", new List.from(["client"]), "username");
+  fillField(){
+    usernameController.text = userInfo.username;
+    emailController.text = userInfo.email;
+    firstNameController.text = userInfo.firstname;
+    lastNameController.text = userInfo.lastname;
+  }
+
+  retrieveUserInfo() {
+    UserService.retrieveUserInfo().then((value){
+      userInfo=value;
+      fillField();
+    });
+
   }
 }

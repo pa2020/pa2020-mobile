@@ -1,6 +1,7 @@
 
 class UserDto{
 
+  int _id;
   String _email;
   String _firstname;
   String _lastname;
@@ -47,10 +48,21 @@ class UserDto{
     _email = value;
   }
 
+
+  int get id => _id;
+
+  set id(int value) {
+    _id = value;
+  }
+
   @override
   String toString() {
     return 'UserDto{_email: $_email, _firstname: $_firstname, _lastname: $_lastname, _password: $_password, _role: $_role, _username: $_username}';
   }
+
+
+  UserDto.withId(this._id, this._email, this._firstname, this._lastname,
+      this._username);
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
     return UserDto(
