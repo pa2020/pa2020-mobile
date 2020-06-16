@@ -8,6 +8,7 @@ void main() => runApp(MaterialApp(
   routes:  <String, WidgetBuilder>{
     "/home": (BuildContext context) => new HomePage(),
     "/signUp": (BuildContext context) => new SignUpScreen(),
+    "/signIn": (BuildContext context) => new SignInScreen(),
   },
 ));
 

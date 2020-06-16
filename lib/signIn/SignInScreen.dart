@@ -14,6 +14,8 @@ class _SignInScreenState extends State<SignInScreen>{
   final passwordController = TextEditingController();
 
 
+  bool _obscureTextPwd = true;
+
   @override
   Widget build(BuildContext context) {
     UserService.checkIfUserAlreadyLoggedIn(context);
@@ -77,11 +79,19 @@ class _SignInScreenState extends State<SignInScreen>{
                         color: Colors.white10,
                       ),
                       TextFormField(
-                        obscureText: true,
+                        obscureText: _obscureTextPwd,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             prefixIcon: Icon(Icons.lock,
                               color: Colors.white,),
+                            suffixIcon: IconButton(
+                              icon: Icon(_obscureTextPwd ? Icons.visibility : Icons.visibility_off),
+                              onPressed: (){
+                                setState(() {
+                                  _obscureTextPwd=!_obscureTextPwd;
+                                });
+                              },
+                            ),
                             hintText: "Enter your password",
                             hintStyle: TextStyle(color: Colors.white54),
                             contentPadding: const EdgeInsets.all(10),
@@ -94,20 +104,8 @@ class _SignInScreenState extends State<SignInScreen>{
                   ),
                 ),
                 Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(
-                      right: 5.0,
-                      top: 10.0
-                  ),
-                  child: FlatButton(
-                    onPressed: ()=>print("Forgot password"),
-                    child: Text(
-                        "Forgot password ?",
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-                Container(
                   alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     children: <Widget>[
                       Checkbox(

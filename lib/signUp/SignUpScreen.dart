@@ -134,7 +134,8 @@ class _SignUpScreenState extends State<SignUpScreen>{
                               ),
                             ],
                           ),
-                        ),Container(
+                        ),
+                        Container(
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.only(top: 10),
                           child: Column(
@@ -218,7 +219,7 @@ class _SignUpScreenState extends State<SignUpScreen>{
                           child: RaisedButton(
                             padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 50.0),
                             onPressed: () {
-                              if(oneFieldIsEMpty()){
+                              if(oneFieldIsEmpty()){
                               Fluttertoast.showToast(msg: "You can't have a blank field");
                               }
                               else if(password1Controller.text!=password2Controller.text){
@@ -235,7 +236,8 @@ class _SignUpScreenState extends State<SignUpScreen>{
                                     lastNameController.text,
                                     password1Controller.text,
                                     new List.from(["client"]),
-                                    usernameController.text));
+                                    usernameController.text),
+                                    context);
                               }
                             } ,
                             color: Colors.white,
@@ -251,7 +253,7 @@ class _SignUpScreenState extends State<SignUpScreen>{
     );
   }
 
-  bool oneFieldIsEMpty(){
+  bool oneFieldIsEmpty(){
     return usernameController.text.isEmpty && password1Controller.text.isEmpty &&
         password2Controller.text.isEmpty && emailController.text.isEmpty &&
         firstNameController.text.isEmpty && lastNameController.text.isEmpty;

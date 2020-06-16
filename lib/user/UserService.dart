@@ -3,10 +3,10 @@ import 'dart:convert';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noticetracker/enumerate/SharedPrefEnum.dart';
 import 'package:noticetracker/signIn/LoginForm.dart';
-import 'package:noticetracker/signIn/SignInScreen.dart';
 import 'package:noticetracker/user/UserDto.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,8 +49,8 @@ class UserService{
     return http.put("https://pa2020-api.herokuapp.com/api/v1/users/$id",
         body : jsonEncode(<String, Object>{
           "email": userDto.email,
-          "firstname": userDto.firstname,
-          "lastname": userDto.lastname
+          "firstName": userDto.firstname,
+          "lastName": userDto.lastname
     }),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -73,8 +73,7 @@ class UserService{
     if(response.statusCode==200){
       Fluttertoast.showToast(msg: "Logged in");
       var jsonRes = json.decode(response.body);
-      if(rememberMe)
-        _saveJsonInfoInSharedPref(jsonRes, login.username, login.password);
+      _saveJsonInfoInSharedPref(jsonRes, login.username, login.password, rememberMe);
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => new HomePage()));
     }else  {
       Fluttertoast.showToast(msg: "Can't loggin");
@@ -97,7 +96,7 @@ class UserService{
   }
 
 
-  static registerUser(UserDto userDto) async {
+  static registerUser(UserDto userDto, BuildContext context) async {
     var response = await _registerUserRequest(userDto);
     var res = response.body;
     print(res);
@@ -107,7 +106,8 @@ class UserService{
     }else {
       Fluttertoast.showToast(msg: "User registered");
       var jsonRes = jsonDecode(response.body);
-      _saveJsonInfoInSharedPref(jsonRes, userDto.username, userDto.password);
+      _saveJsonInfoInSharedPref(jsonRes, userDto.username, userDto.password, true);
+      Navigator.of(context).pushNamed("/signIn");
     }
   }
 
@@ -131,10 +131,12 @@ class UserService{
   }
 
 
-  static _saveJsonInfoInSharedPref(Map<String, dynamic> json, String username, String password) async {
+  static _saveJsonInfoInSharedPref(Map<String, dynamic> json, String username, String password, bool rememberMe) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(EnumToString.parse(SharedPrefEnum.username), username);
-    prefs.setString(EnumToString.parse(SharedPrefEnum.password), password);
+    if(rememberMe) {
+      prefs.setString(EnumToString.parse(SharedPrefEnum.username), username);
+      prefs.setString(EnumToString.parse(SharedPrefEnum.password), password);
+    }
     prefs.setString(EnumToString.parse(SharedPrefEnum.token), json["token"]);
     prefs.setInt(EnumToString.parse(SharedPrefEnum.id), json["id"]);
   }
@@ -178,7 +180,7 @@ class UserService{
     prefs.remove(EnumToString.parse(SharedPrefEnum.token));
     prefs.remove(EnumToString.parse(SharedPrefEnum.id));
 
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => new SignInScreen()));
+    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
 
   }
 
