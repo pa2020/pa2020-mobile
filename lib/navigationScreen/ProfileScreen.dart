@@ -208,6 +208,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userInfo=value;
       fillField();
     });
-
   }
 }

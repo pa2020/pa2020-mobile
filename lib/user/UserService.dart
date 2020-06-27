@@ -1,15 +1,13 @@
 
 import 'dart:convert';
 
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:noticetracker/enumerate/SharedPrefEnum.dart';
+import 'package:noticetracker/sharedPref/SharedPreferenceService.dart';
 import 'package:noticetracker/signIn/LoginForm.dart';
 import 'package:noticetracker/user/UserDto.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../HomePage.dart';
 
@@ -59,8 +57,7 @@ class UserService{
   }
 
   static Future<http.Response> getUserById(int id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString(EnumToString.parse(SharedPrefEnum.token));
+    String token = await SharedPreferenceService.getToken();
     return http.get("https://pa2020-api.herokuapp.com/api/v1/users/$id", headers: <String, String>{
       "Content-Type": "application/json; charset=UTF-",
       "Authorization": "Bearer "+token,
@@ -81,14 +78,13 @@ class UserService{
   }
 
   static Future<void> checkIfUserAlreadyLoggedIn(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString(EnumToString.parse(SharedPrefEnum.token));
+    String token = await SharedPreferenceService.getToken();
     if(token==null || token=="")
       return;
-    String username = prefs.getString(EnumToString.parse(SharedPrefEnum.username));
+    String username = await SharedPreferenceService.getUsername();
     if(username==null || username=="")
       return;
-    String password = prefs.getString(EnumToString.parse(SharedPrefEnum.password));
+    String password = await SharedPreferenceService.getPassword();
     if(password==null || password=="")
       return;
 
@@ -112,9 +108,8 @@ class UserService{
   }
 
   static updateProfile(UserDto userDto) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int id = prefs.getInt(EnumToString.parse(SharedPrefEnum.id));
-    String token = prefs.getString(EnumToString.parse(SharedPrefEnum.token));
+    int id = await SharedPreferenceService.getId();
+    String token = await SharedPreferenceService.getToken();
 
     var response = await _updateUserProfile(userDto, id, token);
     if( response.statusCode!=200){
@@ -124,21 +119,19 @@ class UserService{
       Fluttertoast.showToast(msg: "Profile updated");
       var jsonRes = jsonDecode(response.body);
 
-      prefs.setString(EnumToString.parse(SharedPrefEnum.token), jsonRes["token"]);
-      prefs.setInt(EnumToString.parse(SharedPrefEnum.id), jsonRes["id"]);
-      prefs.setString(EnumToString.parse(SharedPrefEnum.username), userDto.username);
+      SharedPreferenceService.setToken(jsonRes["token"]);
+      SharedPreferenceService.setId(jsonRes["id"]);
+      await SharedPreferenceService.setUsername(userDto.username);
     }
   }
 
 
   static _saveJsonInfoInSharedPref(Map<String, dynamic> json, String username, String password, bool rememberMe) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     if(rememberMe) {
-      prefs.setString(EnumToString.parse(SharedPrefEnum.username), username);
-      prefs.setString(EnumToString.parse(SharedPrefEnum.password), password);
+      await SharedPreferenceService.setUsernamePassword(username, password);
     }
-    prefs.setString(EnumToString.parse(SharedPrefEnum.token), json["token"]);
-    prefs.setInt(EnumToString.parse(SharedPrefEnum.id), json["id"]);
+    await SharedPreferenceService.setToken(json["token"]);
+    await SharedPreferenceService.setId(json["id"]);
   }
 
   static UserDto _fromJsonToUserDto(Map<String, dynamic> json){
@@ -150,7 +143,7 @@ class UserService{
       json["username"]);
 
   }
-  
+
   static String listToString(List<String> list){
     String concat = "";
     list.forEach((item) {
@@ -162,8 +155,7 @@ class UserService{
 
 
   static Future<UserDto> retrieveUserInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int id = prefs.getInt(EnumToString.parse(SharedPrefEnum.id));
+    int id = await SharedPreferenceService.getId();
     var response = await getUserById(id);
     if( response.statusCode!=200){
       throw new Error();
@@ -174,14 +166,9 @@ class UserService{
   }
 
   static logout(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove(EnumToString.parse(SharedPrefEnum.username));
-    prefs.remove(EnumToString.parse(SharedPrefEnum.password));
-    prefs.remove(EnumToString.parse(SharedPrefEnum.token));
-    prefs.remove(EnumToString.parse(SharedPrefEnum.id));
+    await SharedPreferenceService.logout();
 
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-
   }
 
 }

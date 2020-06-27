@@ -1,18 +1,19 @@
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:noticetracker/enumerate/EmotionEnum.dart';
 import 'package:noticetracker/request/AnalyzeRequest.dart';
 import 'package:noticetracker/State.dart';
+import 'package:noticetracker/request/Request.dart';
 
 
 class HistoryCard {
 
 
 
-  Widget requestTemplate(AnalyzedRequest req) {
-    AssetImage img = formatImage(req);
+  Widget requestTemplate(Request req) {
+    AssetImage img = formatImage(req.analyzedRequest);
 
-    String date = formatDate(req.createdAt);
+    String date = formatDate(req.createTime);
 
     return Container(
       decoration : BoxDecoration(
@@ -77,31 +78,34 @@ class HistoryCard {
     }
 
     AssetImage formatImage(AnalyzedRequest req){
-      if (req.state == EnumToString.parse(States.FINISH)) {
-        if (req.negative) {
-          return AssetImage('assets/sentiment_meter_negative.png');
-        } else if (req.positivy) {
-          return AssetImage('assets/sentiment_meter_positive.png');
-        } else if (req.neutral) {
-          return AssetImage('assets/sentiment_meter_neutral.png');
-        } else {
-          throw new Error();
+      try {
+        switch (req.getSentiment()) {
+          case EmotionEnum.positive:
+            return AssetImage('assets/sentiment_meter_positive.png');
+          case EmotionEnum.neutral:
+            return AssetImage('assets/sentiment_meter_neutral.png');
+          case EmotionEnum.negative:
+            return AssetImage('assets/sentiment_meter_negative.png');
+          default:
+            return AssetImage('assets/sentiment_meter_not_processed.png');
         }
-      }else {
-        return AssetImage('assets/sentiment_meter_not_processed.png');
+      }
+      on NoSuchMethodError catch(e){
+        return AssetImage('assets/sentiment_meter.png');
       }
     }
 
     String formatStatus(States states){
       switch(states.toString()){
-        case "States.DONE" :
-          return "done";
-        case "States.WAITING" :
-          return "waiting";
-        case "States.PROCESSING" :
-          return "processing";
+        case "States.INIT" :
+          return "Starting";
+        case "States.RUNNING" :
+          return "Running";
+        case "States.FINISH" :
+          return "Finsihed";
+        default :
+          return "bad formatz";
       }
     }
 
-  HistoryCard();
 }

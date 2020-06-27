@@ -1,63 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:noticetracker/State.dart';
+import 'package:noticetracker/enumerate/EmotionEnum.dart';
 
 class AnalyzedRequest {
-  int _id;
-  String _state;
-  DateTime _createdAt;
-  String _sentence;
-  bool _positivy;
-  bool _neutral;
-  bool _negative;
+  int id;
+  double positive;
+  double negative;
+  double neutral;
+  double unanalyzed;
 
-  AnalyzedRequest(this._state, this._createdAt, this._sentence, this._positivy,
-      this._neutral, this._negative);
+  AnalyzedRequest(this.id, this.positive, this.negative,
+      this.neutral, this.unanalyzed);
 
 
-  AnalyzedRequest.withId(this._id, this._state, this._createdAt, this._sentence,
-      this._positivy, this._neutral, this._negative);
+  EmotionEnum getSentiment(){
+    if(neutral>=positive && neutral>=negative)
+      return EmotionEnum.neutral;
+    if(positive>=neutral && positive>=negative)
+      return EmotionEnum.positive;
+    if(negative>=neutral && negative>=positive)
+      return EmotionEnum.negative;
+    else
+      return EmotionEnum.not_processed;
 
-  bool get negative => _negative;
-
-  set negative(bool value) {
-    _negative = value;
   }
 
-  bool get neutral => _neutral;
+  AnalyzedRequest.none();
 
-  set neutral(bool value) {
-    _neutral = value;
+  AnalyzedRequest.withJson(Map<String, dynamic> json){
+    id = json["analyze_r_id"];
+    positive = json["positive"];
+    negative = json["negative"];
+    neutral = json["neutral"];
+    unanalyzed = json["unanalyzed"];
   }
 
-  bool get positivy => _positivy;
-
-  set positivy(bool value) {
-    _positivy = value;
+  static AnalyzedRequest parseResponseForAnalyzedRequest(jsonDecode) {
+    if(jsonDecode!=null) {
+      return AnalyzedRequest.withJson(jsonDecode);
+    }
+    return AnalyzedRequest.none();
   }
-
-  String get sentence => _sentence;
-
-  set sentence(String value) {
-    _sentence = value;
-  }
-
-  DateTime get createdAt => _createdAt;
-
-  set createdAt(DateTime value) {
-    _createdAt = value;
-  }
-
-  String get state => _state;
-
-  set state(String value) {
-    _state = value;
-  }
-
-  int get id => _id;
-
-  set id(int value) {
-    _id = value;
-  }
-
 
 }

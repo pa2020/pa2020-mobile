@@ -1,42 +1,36 @@
+import 'AnalyzeRequest.dart';
 
 class Request {
+  int requestId;
+  String sentence;
+  String state;
+  DateTime createTime;
+  DateTime updateTime;
+  AnalyzedRequest analyzedRequest;
 
-  int _id;
-  String _state;
-  DateTime _createdAt;
-  String _sentence;
-
-  Request(this._state, this._createdAt, this._sentence);
-
-  Request.withId(this._id, this._state, this._createdAt, this._sentence);
-
-  String get sentence => _sentence;
-
-  set sentence(String value) {
-    _sentence = value;
-  }
-
-  DateTime get createdAt => _createdAt;
-
-  set createdAt(DateTime value) {
-    _createdAt = value;
-  }
-
-  String get state => _state;
-
-  set state(String value) {
-    _state = value;
-  }
-
-  int get id => _id;
-
-  set id(int value) {
-    _id = value;
-  }
+  Request(this.requestId, this.sentence, this.state, this.createTime,
+      this.updateTime, this.analyzedRequest);
 
   @override
   String toString() {
-    return 'Request{_id: $_id, _state: $_state, _createdAt: $_createdAt, _sentence: $_sentence}';
+    return 'Request{requestId: $requestId, sentence: $sentence, state: $state, createTime: $createTime, updateTime: $updateTime, analyzedRequest: $analyzedRequest}';
+  }
+
+  Request.withJson(Map<String, dynamic> json){
+    requestId=json["request_id"];
+    sentence=json["sentence"];
+    state=json["state"];
+    if(json["created_time"]!=null)
+      createTime=DateTime.parse(json["created_time"]);
+    else
+      createTime=DateTime.now();
+
+    if(json["update_time"]!=null)
+      updateTime=DateTime.parse(json["update_time"]);
+    else
+      updateTime=DateTime.now();
+
+    analyzedRequest=AnalyzedRequest.parseResponseForAnalyzedRequest(json["analyzeRequest"]);
   }
 
 
