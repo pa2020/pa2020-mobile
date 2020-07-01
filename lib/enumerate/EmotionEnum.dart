@@ -1,7 +1,1 @@
-
-enum EmotionEnum {
-  positive,
-  neutral,
-  negative,
-  not_processed
-}
+enum EmotionEnum { positive, neutral, negative, not_processed }

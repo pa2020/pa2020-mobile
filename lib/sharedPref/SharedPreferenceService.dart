@@ -1,10 +1,8 @@
-
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:noticetracker/enumerate/SharedPrefEnum.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceService {
-
 
   static Future<int> getId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,6 +40,16 @@ class SharedPreferenceService {
     prefs.setString(EnumToString.parse(SharedPrefEnum.password), password);
   }
 
+  static Future setAdmin(bool admin) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(EnumToString.parse(SharedPrefEnum.admin), admin);
+  }
+
+  static Future<bool> isAdmin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(EnumToString.parse(SharedPrefEnum.admin));
+  }
+
   static Future<String> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(EnumToString.parse(SharedPrefEnum.token));
@@ -59,4 +67,5 @@ class SharedPreferenceService {
     prefs.remove(EnumToString.parse(SharedPrefEnum.token));
     prefs.remove(EnumToString.parse(SharedPrefEnum.id));
   }
+
 }

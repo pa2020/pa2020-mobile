@@ -16,22 +16,22 @@ class Request {
     return 'Request{requestId: $requestId, sentence: $sentence, state: $state, createTime: $createTime, updateTime: $updateTime, analyzedRequest: $analyzedRequest}';
   }
 
-  Request.withJson(Map<String, dynamic> json){
-    requestId=json["request_id"];
-    sentence=json["sentence"];
-    state=json["state"];
-    if(json["created_time"]!=null)
-      createTime=DateTime.parse(json["created_time"]);
+  Request.withJson(Map<String, dynamic> json) {
+    requestId = json["request_id"];
+    sentence = json["sentence"];
+    state = json["state"];
+    if (json["created_time"] != null)
+      createTime = DateTime.parse(json["created_time"]);
     else
-      createTime=DateTime.now();
+      createTime = DateTime.now();
 
-    if(json["update_time"]!=null)
-      updateTime=DateTime.parse(json["update_time"]);
+    if (json["update_time"] != null)
+      updateTime = DateTime.parse(json["update_time"]);
     else
-      updateTime=DateTime.now();
+      updateTime = DateTime.now();
 
-    analyzedRequest=AnalyzedRequest.parseResponseForAnalyzedRequest(json["analyzeRequest"]);
+    analyzedRequest =
+        AnalyzedRequest.parseResponseForAnalyzedRequest(json["analyzeRequest"]);
   }
-
 
 }

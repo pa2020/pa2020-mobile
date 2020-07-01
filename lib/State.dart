@@ -1,6 +1,1 @@
-
-enum States  {
-  INIT,
-  RUNNING,
-  FINISH
-}
+enum States { INIT, RUNNING, FINISH }

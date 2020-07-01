@@ -1,77 +1,25 @@
+class UserDto {
+  int id;
+  String email;
+  String firstName;
+  String lastName;
+  String password;
+  List<String> role;
+  String username;
 
-class UserDto{
-
-  int _id;
-  String _email;
-  String _firstname;
-  String _lastname;
-  String _password;
-  List<String> _role;
-  String _username;
-
-  UserDto(this._email, this._firstname, this._lastname, this._password,
-      this._role, this._username);
-
-  String get username => _username;
-
-  set username(String value) {
-    _username = value;
-  }
-
-  List<String> get role => _role;
-
-  set role(List<String> value) {
-    _role = value;
-  }
-
-  String get password => _password;
-
-  set password(String value) {
-    _password = value;
-  }
-
-  String get lastname => _lastname;
-
-  set lastname(String value) {
-    _lastname = value;
-  }
-
-  String get firstname => _firstname;
-
-  set firstname(String value) {
-    _firstname = value;
-  }
-
-  String get email => _email;
-
-  set email(String value) {
-    _email = value;
-  }
-
-
-  int get id => _id;
-
-  set id(int value) {
-    _id = value;
-  }
+  UserDto(this.email, this.firstName, this.lastName, this.password,
+      this.role, this.username);
 
   @override
   String toString() {
-    return 'UserDto{_email: $_email, _firstname: $_firstname, _lastname: $_lastname, _password: $_password, _role: $_role, _username: $_username}';
+    return 'UserDto{email: $email, firstname: $firstName, lastname: $lastName, password: $password, role: $role, username: $username}';
   }
 
-
-  UserDto.withId(this._id, this._email, this._firstname, this._lastname,
-      this._username);
+  UserDto.withId(
+      this.id, this.email, this.firstName, this.lastName, this.username);
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
-    return UserDto(
-      json["email"],
-      json["firstname"],
-      json["lastname"],
-      json["password"],
-      json["role"],
-      json["username"]);
+    return UserDto(json["email"], json["firstname"], json["lastname"],
+        json["password"], json["role"], json["username"]);
   }
-
 }

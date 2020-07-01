@@ -1,4 +1,3 @@
-
 class RequestDto {
   DateTime createdAt;
   String sentence;
@@ -11,6 +10,4 @@ class RequestDto {
   String toString() {
     return 'Request{_createdAt: $createdAt, _sentence: $sentence}';
   }
-
-
 }
