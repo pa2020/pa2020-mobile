@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:noticetracker/navigationScreen/AdministrationScreen.dart';
 import 'package:noticetracker/navigationScreen/HistoryScreen.dart';
 import 'package:noticetracker/navigationScreen/ProfileScreen.dart';
 import 'package:noticetracker/navigationScreen/SearchScreen.dart';
-import 'package:noticetracker/stats/StatsScreen.dart';
+import 'package:noticetracker/sharedPref/SharedPreferenceService.dart';
+
+import 'util/Spinner.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,54 +15,91 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIdx = 0;
 
+  Future<bool> _admin;
 
-  final tabs = [
+  var tabs = [
     new HistoryScreen(),
     new SearchScreen(),
-    new StatsScreen(),
     new ProfileScreen()
   ];
 
   @override
   void initState() {
     super.initState();
+    _admin=SharedPreferenceService.isAdmin();
+    setTabs();
   }
 
   @override
+  void dispose() {
+    SharedPreferenceService.removeRequests();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: Text("Notice Tracker"),
-          centerTitle: true,
-          backgroundColor: Colors.blue,
-        ),
-        body: tabs[_currentIdx],
-        bottomNavigationBar: _generateAdminBottomNavBar()
+
+    return FutureBuilder(
+      future: _admin,
+      builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+        if((asyncSnapshot.connectionState==ConnectionState.done && !asyncSnapshot.hasData)
+            || asyncSnapshot.connectionState==ConnectionState.none){
+          return Center(child: Text("Nothing to display"));
+        }
+        else if(asyncSnapshot.connectionState!=ConnectionState.done){
+          return Spinner.startSpinner(Colors.blue);
+        }
+        else if(asyncSnapshot.hasError){
+          return Text("Error : ${asyncSnapshot.hasError}");
+        }else {
+          return Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: tabs[_currentIdx],
+              bottomNavigationBar: asyncSnapshot.data?_generateAdminBottomNavBar():_generateUserBottomNavBar()
+          );
+        }
+      },
     );
   }
 
-  _generateAdminBottomNavBar() {
+  Widget _generateAdminBottomNavBar() {
     return BottomNavigationBar(
       currentIndex: _currentIdx,
       backgroundColor: Colors.blue,
       items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          title: Text("Search History"),
+          icon: Icon(Icons.history,
+              color: Colors.white),
+          title: Text("Request History",
+              style: TextStyle(
+                  color: Colors.white
+              )),
           backgroundColor: Colors.blue,
         ),
         BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            title: Text("Search"),
+            icon: Icon(Icons.search,
+                color: Colors.white),
+            title: Text("Search",
+                style: TextStyle(
+                    color: Colors.white
+                )),
             backgroundColor: Colors.blue),
         BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            title: Text("Profile"),
+            icon: Icon(Icons.settings,
+                color: Colors.white),
+            title: Text("Administration ",
+                style: TextStyle(
+                    color: Colors.white
+                )),
             backgroundColor: Colors.blue),
         BottomNavigationBarItem(
-            icon: Icon(Icons.show_chart),
-            title: Text("Statistics"),
+            icon: Icon(Icons.person,
+                color: Colors.white),
+            title: Text("Profile",
+            style: TextStyle(
+              color: Colors.white
+            ),),
             backgroundColor: Colors.blue),
       ],
       onTap: (index) {
@@ -68,6 +108,51 @@ class _HomePageState extends State<HomePage> {
         });
       },
     );
+  }
+
+  Widget  _generateUserBottomNavBar() {
+    return BottomNavigationBar(
+      currentIndex: _currentIdx,
+      backgroundColor: Colors.blue,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history,
+              color: Colors.white),
+          title: Text("Request History",
+              style: TextStyle(
+                  color: Colors.white
+              )),
+          backgroundColor: Colors.blue,
+        ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.search,
+                color: Colors.white),
+            title: Text("Search",
+                style: TextStyle(
+                    color: Colors.white
+                )),
+            backgroundColor: Colors.blue),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person,
+              color: Colors.white,),
+            title: Text("Profile",
+                style: TextStyle(
+                    color: Colors.white
+                )),
+            backgroundColor: Colors.blue),
+      ],
+      onTap: (index) {
+        setState(() {
+          _currentIdx = index;
+        });
+      },
+    );
+  }
+
+  Future<void> setTabs() async {
+    bool admin = await _admin;
+    if(admin)
+      tabs.insert(tabs.length-1,new AdministrationScreen());
   }
 
 }

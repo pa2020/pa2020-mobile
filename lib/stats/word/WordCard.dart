@@ -15,24 +15,28 @@ class WordCard{
 
     return Container(
       margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        border: Border.all(width: 1.0, color: Colors.black)
+        border: Border.all(width: 1.0, color: Colors.blue)
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Text("Sentence : ", style: TextStyle(
+                    Text("Sentence : ",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 25),),
                     Text("${word.sentence}",
-                    style: TextStyle(
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
                         fontSize: 20,
                     ),)
                   ],
@@ -42,9 +46,11 @@ class WordCard{
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                  children: <Widget>[
-                   Text("Occurence : ", style: TextStyle(fontWeight:
-                   FontWeight.bold,
-                  fontSize: 25),),
+                   Text("Occurence : ",
+                     textAlign: TextAlign.left,
+                     style: TextStyle(
+                         fontWeight: FontWeight.bold,
+                         fontSize: 25),),
                    Text("${word.occurrence}",
                        style: TextStyle(
                          fontSize: 20,))],
@@ -54,7 +60,8 @@ class WordCard{
           ),
           Container(
             child: IconButton(
-              icon: Icon(Icons.open_in_new),
+              icon: Icon(Icons.open_in_new,
+              color: Colors.blue,),
               onPressed: (){
                 Navigator.push(
                     context,

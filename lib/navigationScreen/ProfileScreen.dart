@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:noticetracker/util/AlertDialogDesign.dart';
+import 'package:noticetracker/util/Spinner.dart';
 import 'package:noticetracker/user/UserDto.dart';
 import 'package:noticetracker/user/UserService.dart';
 
@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return Center(child: Text("Nothing to display"));
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
-          return _startSpinner();
+          return Spinner.startSpinner(Colors.blue);
         }
         else if(asyncSnapshot.hasError){
           return Text("Error : ${asyncSnapshot.hasError}");
@@ -44,15 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
-
-  Widget _startSpinner() {
-    return Center(
-      child: SpinKitDualRing(
-        color: Colors.blue,
-      ),
-    );
-  }
-
 
 
   _generateScaffold(){
@@ -185,26 +176,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: RaisedButton(
                               padding: EdgeInsets.symmetric(
                                   vertical: 15.0, horizontal: 15.0),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (oneFieldIsEmpty()) {
-                                  Fluttertoast.showToast(
-                                      msg: "You can't have a blank field");
+
+                                  showDialog(context: context,
+                                      barrierDismissible: true,
+                                      builder: (BuildContext context){
+                                        return AlertDialogDesign.badAlertDialog(context, "You can't have a blank field", "Form is incomplete");
+                                    }
+                                  );
+
+
                                 } else if (!RegExp(
                                     r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
                                     .hasMatch(emailController.text)) {
-                                  Fluttertoast.showToast(
-                                      msg: "Please enter a valid mail address");
+
+
+                                  showDialog(context: context,
+                                      barrierDismissible: true,
+                                      builder: (BuildContext context){
+                                        return
+                                          AlertDialogDesign.goodAlertDialog(context,
+                                              "The user ${usernameController.text} is updated.",
+                                              "Profile updated");
+                                      });
+
                                 } else {
                                   try {
-                                    UserService.updateProfile(new UserDto(
+                                    await UserService.updateProfile(new UserDto(
                                         emailController.text,
                                         firstNameController.text,
                                         lastNameController.text,
                                         "",
                                         [""],
-                                        ""));
+                                        "")).whenComplete(() {
+                                      showDialog(context: context,
+                                          barrierDismissible: true,
+                                          builder: (BuildContext context){
+                                            return
+                                              AlertDialogDesign.goodAlertDialog(context,
+                                                  "The user ${usernameController.text} is updated.",
+                                                  "Profile updated");
+                                          }
+                                      );
+                                    });
+                                    
                                   } on Exception catch (e) {
-                                    Fluttertoast.showToast(msg: e.toString());
+                                    showDialog(context: context,
+                                        barrierDismissible: true,
+                                        builder: (BuildContext context){
+                                          return AlertDialogDesign.badAlertDialog(context, e.toString(), "Can't update profile");
+                                        }
+                                    );
+
                                   }
                                 }
                               },
@@ -223,8 +247,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 15.0, horizontal: 15.0),
                               onPressed: () {
-                                Fluttertoast.showToast(msg: "Disconnecting");
-                                UserService.logout(context);
+                                showDialog(context: context,
+                                    barrierDismissible: true,
+                                    builder: (BuildContext context){
+                                      return AlertDialogDesign.disconnectionAlertDialog(context);
+                                    }
+                                );
                               },
                               color: Colors.red,
                               shape: RoundedRectangleBorder(

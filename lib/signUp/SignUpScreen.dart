@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noticetracker/user/UserDto.dart';
 import 'package:noticetracker/user/UserService.dart';
+import 'package:noticetracker/util/AlertDialogDesign.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -255,27 +255,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             vertical: 15.0, horizontal: 50.0),
                         onPressed: () {
                           if (oneFieldIsEmpty()) {
-                            Fluttertoast.showToast(
-                                msg: "You can't have a blank field");
+                            showDialog(context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context){
+                                  return AlertDialogDesign.badAlertDialog(
+                                      context,"You can't have a blank field","Please complete the field properly");
+                                }
+                            );
+
                           } else if (password1Controller.text !=
                               password2Controller.text) {
-                            Fluttertoast.showToast(
-                                msg: "Password doesnt match !");
+                            showDialog(context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context){
+                                  return AlertDialogDesign.badAlertDialog(
+                                      context,"Password doesnt match !","Please complete the field properly");
+                                }
+                            );
+
                           } else if (!RegExp(
                                   r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
                               .hasMatch(emailController.text)) {
-                            Fluttertoast.showToast(
-                                msg: "Please enter a valid mail address");
+                            showDialog(context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context){
+                                  return AlertDialogDesign.badAlertDialog(
+                                      context,"Please enter a valid mail address","Please complete the field properly");
+                                }
+                            );
                           } else {
-                            UserService.registerUser(
-                                new UserDto(
-                                    emailController.text,
-                                    firstNameController.text,
-                                    lastNameController.text,
-                                    password1Controller.text,
-                                    new List.from(["client"]),
-                                    usernameController.text),
-                                context);
+                            try{
+                              UserService.registerUser(
+                                  new UserDto(
+                                      emailController.text,
+                                      firstNameController.text,
+                                      lastNameController.text,
+                                      password1Controller.text,
+                                      new List.from(["client"]),
+                                      usernameController.text),
+                                  context).whenComplete((){
+
+                                    showDialog(context: context,
+                                        barrierDismissible: true,
+                                        builder: (BuildContext context){
+                                      return AlertDialogDesign.goodAlertDialog(context,"The user is register", "Registration complete");
+                                    }
+                                );
+
+                              });
+                            }on Exception catch(e){
+                              showDialog(context: context,
+                                  barrierDismissible: true,
+                                  builder: (BuildContext context){
+                                    return AlertDialogDesign.badAlertDialog(context,e.toString(), "Registration error");
+                                  }
+                              );
+                            }
                           }
                         },
                         color: Colors.white,
@@ -302,4 +337,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
         firstNameController.text.isEmpty &&
         lastNameController.text.isEmpty;
   }
+
 }

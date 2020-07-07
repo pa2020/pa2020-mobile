@@ -3,5 +3,6 @@ enum SharedPrefEnum {
   password,
   token,
   id,
-  admin
+  admin,
+  requests
 }

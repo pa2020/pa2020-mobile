@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:noticetracker/signIn/LoginForm.dart';
 import 'package:noticetracker/user/UserService.dart';
+import 'package:noticetracker/util/AlertDialogDesign.dart';
+import 'package:permission/permission.dart';
+
+import '../util/Spinner.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -18,9 +21,16 @@ class _SignInScreenState extends State<SignInScreen> {
 
   bool _obscureTextPwd = true;
 
+
   @override
   void initState() {
     super.initState();
+    _checkPermission();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     _loginIn=UserService.checkIfUserAlreadyLoggedIn(context);
   }
 
@@ -50,24 +60,28 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _startSpinner() {
-    return Center(
-      child: SpinKitDualRing(
-        color: Colors.white,
-      ),
-    );
-  }
-
   Widget _generateFutureBuilder(){
     return FutureBuilder(
       future: _loginIn,
       builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
         if((asyncSnapshot.connectionState==ConnectionState.done && !asyncSnapshot.hasData)
             || asyncSnapshot.connectionState==ConnectionState.none){
-          return Center(child: Text("Nothing to display"));
+          showDialog(context: context,
+            barrierDismissible: true,
+            builder: (BuildContext context){
+              return AlertDialogDesign.badAlertDialog(context, "Can't loggin", "Error while trying to login");
+            }
+          );
+          _loginIn=UserService.checkIfUserAlreadyLoggedIn(context);
+          return Center(
+              child: Text("Try turning your wifi or data services",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17
+                ),));
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
-          return _startSpinner();
+          return Spinner.startSpinner(Colors.white);
         }
         else if(asyncSnapshot.hasError){
           return Text("Error : ${asyncSnapshot.hasError}");
@@ -180,7 +194,7 @@ class _SignInScreenState extends State<SignInScreen> {
             child: RaisedButton(
               padding:
               EdgeInsets.symmetric(vertical: 15.0, horizontal: 50.0),
-              onPressed: () {
+              onPressed: () async{
                 setState(() {
                   try {
                     _loginIn = UserService.logUser(
@@ -192,6 +206,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     print(e);
                   }
                 });
+                bool _dialog = await _loginIn;
+                if(!_dialog)
+                  showDialog(context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context){
+                        return AlertDialogDesign.badAlertDialog(context, "Can't loggin", "Bad login");
+                      }
+                  );
               },
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -225,4 +247,20 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
+
+  _checkPermission() async {
+    PermissionName internetPermission = PermissionName.Internet;
+    PermissionStatus permission = await Permission.getSinglePermissionStatus(internetPermission);
+    if(!_isPermissionGranted(permission)){
+      var permissionStatus = await Permission.requestSinglePermission(internetPermission);
+      if(!_isPermissionGranted(permissionStatus))
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    }
+  }
+
+  _isPermissionGranted(PermissionStatus permissionStatus){
+    return permissionStatus==PermissionStatus.always ||  permissionStatus==PermissionStatus.allow;
+  }
+
 }

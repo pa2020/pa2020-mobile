@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:noticetracker/sharedPref/SharedPreferenceService.dart';
 import 'package:noticetracker/stats/StatsService.dart';
 import 'package:noticetracker/stats/word/WordCard.dart';
 
+import '../util/Spinner.dart';
 import 'word/Word.dart';
 
 class StatsScreen extends StatefulWidget {
@@ -38,13 +38,7 @@ class _StatsScreenState extends State<StatsScreen> {
           return Center(child: Text("No stats to display"));
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
-          return Scaffold(
-              body: Container(
-                child: Center(child: SpinKitDualRing(
-                  color: Colors.blue,
-                ),),
-              )
-          );
+          return Spinner.startSpinner(Colors.blue);
         }
         else if(asyncSnapshot.hasError){
           return Text("Error : ${asyncSnapshot.hasError}");
@@ -75,9 +69,9 @@ class _StatsScreenState extends State<StatsScreen> {
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
           return Scaffold(
               body: Container(
-                child: Center(child: SpinKitDualRing(
-                  color: Colors.blue,
-                ),),
+                child: Center(
+                    child : Spinner.startSpinner(Colors.blue)
+                ),
               )
           );
         }

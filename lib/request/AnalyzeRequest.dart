@@ -10,14 +10,14 @@ class AnalyzedRequest {
   AnalyzedRequest(
       this.id, this.positive, this.negative, this.neutral, this.unAnalyzed);
 
-  EmotionEnum getSentiment() {
-    if (neutral >= positive && neutral >= negative) return EmotionEnum.neutral;
+  SentimentEnum getSentiment() {
+    if (neutral >= positive && neutral >= negative) return SentimentEnum.neutral;
     if (positive >= neutral && positive >= negative)
-      return EmotionEnum.positive;
+      return SentimentEnum.positive;
     if (negative >= neutral && negative >= positive)
-      return EmotionEnum.negative;
+      return SentimentEnum.negative;
     else
-      return EmotionEnum.not_processed;
+      return SentimentEnum.not_processed;
   }
 
   AnalyzedRequest.none();
@@ -30,26 +30,26 @@ class AnalyzedRequest {
     unAnalyzed = json["unanalyzed"];
   }
 
-  static AnalyzedRequest parseResponseForAnalyzedRequest(jsonDecode) {
+  static AnalyzedRequest parseResponseForAnalyzedRequest(Map<String, dynamic> jsonDecode) {
     if (jsonDecode != null) {
       return AnalyzedRequest.withJson(jsonDecode);
     }
     return AnalyzedRequest.none();
   }
 
-  double _getSentimentPercentage(EmotionEnum emotionEnum){
+  double getSentimentPercentage(SentimentEnum emotionEnum){
     double total = positive+negative+neutral+unAnalyzed;
     switch(emotionEnum){
-      case EmotionEnum.positive:
+      case SentimentEnum.positive:
         return (positive/total)*100;
 
-      case EmotionEnum.neutral:
+      case SentimentEnum.neutral:
         return (neutral/total)*100;
 
-      case EmotionEnum.negative:
+      case SentimentEnum.negative:
         return (negative/total)*100;
 
-      case EmotionEnum.not_processed:
+      case SentimentEnum.not_processed:
         return 0;
     }
     return 0;
@@ -57,18 +57,18 @@ class AnalyzedRequest {
 
 
   String getSentimentSentence(){
-    EmotionEnum emotionEnum = getSentiment();
+    SentimentEnum emotionEnum = getSentiment();
     switch(emotionEnum){
-      case EmotionEnum.positive:
-        return "positive at : ${_getSentimentPercentage(emotionEnum).toStringAsFixed(2)}%";
+      case SentimentEnum.positive:
+        return "positive at : ${getSentimentPercentage(emotionEnum).toStringAsFixed(2)}%";
 
-      case EmotionEnum.neutral:
-        return "neutral at : ${_getSentimentPercentage(emotionEnum).toStringAsFixed(2)}%";
+      case SentimentEnum.neutral:
+        return "neutral at : ${getSentimentPercentage(emotionEnum).toStringAsFixed(2)}%";
 
-      case EmotionEnum.negative:
-        return "negative at : ${_getSentimentPercentage(emotionEnum).toStringAsFixed(2)}%";
+      case SentimentEnum.negative:
+        return "negative at : ${getSentimentPercentage(emotionEnum).toStringAsFixed(2)}%";
 
-      case EmotionEnum.not_processed:
+      case SentimentEnum.not_processed:
         return "";
 
     }
@@ -88,4 +88,12 @@ class AnalyzedRequest {
       return true;
     return false;
   }
+
+  Map<String, dynamic> toJson() => {
+    "id":id,
+    "positive":positive,
+    "negative":negative,
+    "neutral":neutral,
+    "unanalyzed":unAnalyzed,
+  };
 }

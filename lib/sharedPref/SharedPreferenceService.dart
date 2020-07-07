@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:noticetracker/enumerate/SharedPrefEnum.dart';
+import 'package:noticetracker/request/Request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceService {
@@ -60,12 +63,42 @@ class SharedPreferenceService {
     prefs.setString(EnumToString.parse(SharedPrefEnum.token), token);
   }
 
+  static Future setRequests(List<Request> requests) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> jsonList=[];
+    for(var i = 0; i<requests.length;i++){
+      jsonList.add(jsonEncode(requests[i].toJson()));
+    }
+    String requestsStr=jsonEncode(jsonList);
+    prefs.setString(EnumToString.parse(SharedPrefEnum.requests), requestsStr);
+  }
+
+  static Future<List<Request>> getRequests() async {
+    List<Request> reqList =[];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var json = prefs.getString(EnumToString.parse(SharedPrefEnum.requests));
+    if(json!=null) {
+      var jsonList = jsonDecode(json) as List;
+      for(int i = 0; i<jsonList.length;i++){
+        reqList.add((Request.withJsonForAnalyzeReq(jsonDecode(jsonList[i]))));
+      }
+      return reqList;
+    }
+    return reqList;
+  }
+
   static logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(EnumToString.parse(SharedPrefEnum.username));
     prefs.remove(EnumToString.parse(SharedPrefEnum.password));
     prefs.remove(EnumToString.parse(SharedPrefEnum.token));
     prefs.remove(EnumToString.parse(SharedPrefEnum.id));
+    prefs.remove(EnumToString.parse(SharedPrefEnum.requests));
+  }
+
+  static Future<void> removeRequests() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove(EnumToString.parse(SharedPrefEnum.requests));
   }
 
 }

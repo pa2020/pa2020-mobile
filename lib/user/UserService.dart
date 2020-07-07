@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:noticetracker/sharedPref/SharedPreferenceService.dart';
 import 'package:noticetracker/signIn/LoginForm.dart';
@@ -69,7 +68,6 @@ class UserService {
     try {
       var response = await _loginUserRequest(login);
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(msg: "Logged in");
         var jsonRes = json.decode(response.body);
         _saveJsonInfoInSharedPref(
             jsonRes, login.username, login.password, rememberMe);
@@ -86,7 +84,6 @@ class UserService {
         }
 
       } else {
-        Fluttertoast.showToast(msg: "Can't loggin");
         return false;
       }
     }on HttpException catch(e){
@@ -117,10 +114,8 @@ class UserService {
     var res = response.body;
     print(res);
     if (response.statusCode != 200) {
-      Fluttertoast.showToast(msg: "Cant registered user");
-      throw new Error();
+      throw new Exception("Can't register user.");
     } else {
-      Fluttertoast.showToast(msg: "User registered");
       var jsonRes = jsonDecode(response.body);
       _saveJsonInfoInSharedPref(
           jsonRes, userDto.username, userDto.password, true);
@@ -128,18 +123,15 @@ class UserService {
     }
   }
 
-  static updateProfile(UserDto userDto) async {
+  static Future<void> updateProfile(UserDto userDto) async {
     var response = await _updateUserProfile(userDto);
     if (response.statusCode != 200) {
-      Fluttertoast.showToast(msg: "Can't update the user info !");
       throw new Exception("Can't update profil");
-    } else {
-      Fluttertoast.showToast(msg: "Profile updated");
-      var jsonRes = jsonDecode(response.body);
+    } else {      var jsonRes = jsonDecode(response.body);
 
       SharedPreferenceService.setToken(jsonRes["token"]);
       SharedPreferenceService.setId(jsonRes["id"]);
-      await SharedPreferenceService.setUsername(userDto.username);
+      SharedPreferenceService.setUsername(userDto.username);
     }
   }
 

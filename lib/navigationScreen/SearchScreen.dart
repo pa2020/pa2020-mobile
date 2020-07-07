@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:noticetracker/util/Spinner.dart';
 import 'package:noticetracker/enumerate/EmotionEnum.dart';
 import 'package:noticetracker/request/RequestResponse.dart';
 import 'package:noticetracker/request/RequestService.dart';
@@ -47,7 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
                 onPressed: () {
                   setState(() {
-                    _getResponse = RequestService.sendRequest(_requestSentence);
+                    _getResponse = RequestService.sendRequest(_requestSentence, context);
                   });
                 },
                 color: Color(0xFF21f3e7),
@@ -76,11 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
               fit: BoxFit.fitWidth);
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
-          return Center(
-            child: SpinKitDualRing(
-              color: Colors.blue,
-            ),
-          );
+          return Spinner.startSpinner(Colors.blue);
         }
         else if(asyncSnapshot.hasError){
           return Text("Error : ${asyncSnapshot.hasError}");
@@ -95,7 +91,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _showResponse(AsyncSnapshot asyncSnapshot) {
     RequestResponse requestResponse = asyncSnapshot.data;
     switch (requestResponse.getSentiment()) {
-      case EmotionEnum.positive:
+      case SentimentEnum.positive:
         return Column(
           children: <Widget>[
             Text("Positive at ${requestResponse.positive.toStringAsFixed(2)}%",
@@ -105,7 +101,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         );
 
-      case EmotionEnum.neutral:
+      case SentimentEnum.neutral:
         return Column(
           children: <Widget>[
             Text("Neutral at ${requestResponse.neutral.toStringAsFixed(2)}%",
@@ -115,7 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         );
 
-      case EmotionEnum.negative:
+      case SentimentEnum.negative:
         return Column(
           children: <Widget>[
             Text("Negative at ${requestResponse.negative.toStringAsFixed(2)}%",
@@ -125,7 +121,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         );
 
-      case EmotionEnum.not_processed:
+      case SentimentEnum.not_processed:
         return Column(
           children: <Widget>[
             Text("Not processed"),

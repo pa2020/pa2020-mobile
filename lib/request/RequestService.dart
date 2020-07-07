@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:noticetracker/enumerate/EmotionEnum.dart';
 import 'package:noticetracker/request/RequestResponse.dart';
 import 'package:noticetracker/sharedPref/SharedPreferenceService.dart';
+import 'package:noticetracker/util/AlertDialogDesign.dart';
 
 import 'Request.dart';
 import 'RequestDto.dart';
@@ -48,16 +51,15 @@ class RequestService {
     return new RequestDto(new DateTime.now(), sentence);
   }
 
-  static Future<RequestResponse> sendRequest(String sentence) async {
+  static Future<RequestResponse> sendRequest(String sentence, BuildContext context) async {
     RequestDto req = createRequest(sentence);
     var response = await _sendRequest(req);
     if (response.statusCode == 200) {
-      Fluttertoast.showToast(msg: "Request send");
       RequestResponse requestResponse =
           _parseResponseForRequestResponse(jsonDecode(response.body));
       return requestResponse;
     } else {
-      Fluttertoast.showToast(msg: " Error while sending the Request !");
+      AlertDialogDesign.badAlertDialog(context, " Error while sending the Request !", "Bad request");
       throw new Exception("Can't save request");
     }
   }
@@ -78,9 +80,10 @@ class RequestService {
       var jsonBody = jsonDecode(response.body);
       var reqListJson = jsonBody as List;
       List<Request> requestResponse = _parseRequestList(reqListJson);
-      return sortAndFilterList(requestResponse);
+      SharedPreferenceService.setRequests(requestResponse);
+      return sortAndFilterListByDate(requestResponse);
     } else {
-      Fluttertoast.showToast(msg: " Error while sending the Request !");
+      Fluttertoast.showToast(msg: " Error while fecching the requests !");
       throw new Exception("Can't save request");
     }
   }
@@ -96,12 +99,39 @@ class RequestService {
     });
     return list;
   }
-  
-  static List<Request> sortAndFilterList(List<Request> list){
+
+  static List<Request> sortAndFilterListByDate(List<Request> list){
     list.sort((Request a, Request b) =>
       a.createTime.isAfter(b.createTime) == true ? -1 : 1
     );
     List<Request> l = list.where((req)=>req.analyzedRequest!=null && !req.analyzedRequest.hasNullElement()).toList();
     return l;
+  }
+
+  static List<Request> sortAndFilterListByPositivity(List<Request> list){
+    list.sort((Request a, Request b) =>
+    a.getAnalysedRequestSentimentPercentage(SentimentEnum.positive)>b.getAnalysedRequestSentimentPercentage(SentimentEnum.positive) ? -1 : 1
+    );
+    List<Request> l = list.where((req)=>req.analyzedRequest!=null && !req.analyzedRequest.hasNullElement()).toList();
+    return l;
+  }
+
+  static List<Request> sortAndFilterListByNegativity(List<Request> list){
+    list.sort((Request a, Request b) =>
+    a.getAnalysedRequestSentimentPercentage(SentimentEnum.negative)>b.getAnalysedRequestSentimentPercentage(SentimentEnum.negative) ? -1 : 1
+    );
+    List<Request> l = list.where((req)=>req.analyzedRequest!=null && !req.analyzedRequest.hasNullElement()).toList();
+    return l;
+  }
+
+  static List<Request> sortAndFilterListByNeutrality(List<Request> list){
+    list.sort((Request a, Request b) =>
+    a.getAnalysedRequestSentimentPercentage(SentimentEnum.neutral)>b.getAnalysedRequestSentimentPercentage(SentimentEnum.neutral) ? -1 : 1
+    );
+    return list;
+  }
+
+  static List<Request> listContains(String searchSentence, List<Request> list) {
+    return list.where((req)=>req.sentence.contains(searchSentence)).toList();
   }
 }

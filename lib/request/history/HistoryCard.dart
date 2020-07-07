@@ -26,11 +26,11 @@ class HistoryCard {
   static AssetImage formatImage(AnalyzedRequest req) {
     try {
       switch (req.getSentiment()) {
-        case EmotionEnum.positive:
+        case SentimentEnum.positive:
           return AssetImage('assets/sentiment_meter_positive.png');
-        case EmotionEnum.neutral:
+        case SentimentEnum.neutral:
           return AssetImage('assets/sentiment_meter_neutral.png');
-        case EmotionEnum.negative:
+        case SentimentEnum.negative:
           return AssetImage('assets/sentiment_meter_negative.png');
         default:
           return AssetImage('assets/sentiment_meter_not_processed.png');
@@ -59,8 +59,9 @@ class HistoryCard {
 
     String date = formatDate(req.createTime);
     return Container(
+      padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        border: Border.all(),
+        border: Border.all(width: 1, color: Colors.blue),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),

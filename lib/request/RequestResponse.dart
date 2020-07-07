@@ -19,15 +19,15 @@ class RequestResponse {
   getSentiment() {
     if (neutral > positive &&
         neutral > negative)
-      return EmotionEnum.neutral;
+      return SentimentEnum.neutral;
     if (positive > neutral &&
         positive > negative)
-      return EmotionEnum.positive;
+      return SentimentEnum.positive;
     if (negative > neutral &&
         negative > positive)
-      return EmotionEnum.negative;
+      return SentimentEnum.negative;
     else
-      return EmotionEnum.not_processed;
+      return SentimentEnum.not_processed;
   }
 
 
