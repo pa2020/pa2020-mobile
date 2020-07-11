@@ -4,5 +4,6 @@ enum SharedPrefEnum {
   token,
   id,
   admin,
-  requests
+  requests,
+  tutorial
 }

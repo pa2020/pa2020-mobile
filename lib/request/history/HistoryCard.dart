@@ -32,6 +32,8 @@ class HistoryCard {
           return AssetImage('assets/sentiment_meter_neutral.png');
         case SentimentEnum.negative:
           return AssetImage('assets/sentiment_meter_negative.png');
+        case SentimentEnum.empty:
+          return AssetImage('assets/sentiment_meter.png');
         default:
           return AssetImage('assets/sentiment_meter_not_processed.png');
       }

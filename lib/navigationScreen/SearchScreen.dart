@@ -130,6 +130,15 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         );
 
+      case SentimentEnum.empty:
+        return Column(
+          children: <Widget>[
+            Text("Not processed"),
+            Image.asset('assets/sentiment_meter.png',
+                fit: BoxFit.fitWidth),
+          ],
+        );
+
       default:
         return SingleChildScrollView(
           child: Image.asset('assets/sentiment_meter_not_processed.png',

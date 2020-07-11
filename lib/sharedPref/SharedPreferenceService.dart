@@ -101,4 +101,13 @@ class SharedPreferenceService {
     prefs.remove(EnumToString.parse(SharedPrefEnum.requests));
   }
 
+  static Future setTutorial(bool tutorial) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(EnumToString.parse(SharedPrefEnum.tutorial), tutorial);
+  }
+
+  static Future<bool> isTutorialDone() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(EnumToString.parse(SharedPrefEnum.tutorial));
+  }
 }

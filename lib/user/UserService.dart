@@ -101,7 +101,7 @@ class UserService {
     String password = await SharedPreferenceService.getPassword();
     if (password == null || password == "") return false;
     try {
-      UserService.logUser(new LoginForm(password,username), true, context);
+      await UserService.logUser(new LoginForm(password,username), true, context);
     }on Exception catch(e){
       print(e);
       return false;

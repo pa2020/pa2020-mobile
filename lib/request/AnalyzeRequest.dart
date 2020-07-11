@@ -11,6 +11,8 @@ class AnalyzedRequest {
       this.id, this.positive, this.negative, this.neutral, this.unAnalyzed);
 
   SentimentEnum getSentiment() {
+    if(neutral==positive&& neutral==negative && negative==positive)
+      return SentimentEnum.empty;
     if (neutral >= positive && neutral >= negative) return SentimentEnum.neutral;
     if (positive >= neutral && positive >= negative)
       return SentimentEnum.positive;
@@ -39,6 +41,8 @@ class AnalyzedRequest {
 
   double getSentimentPercentage(SentimentEnum emotionEnum){
     double total = positive+negative+neutral+unAnalyzed;
+    if(total==0)
+      return 0;
     switch(emotionEnum){
       case SentimentEnum.positive:
         return (positive/total)*100;
@@ -50,6 +54,8 @@ class AnalyzedRequest {
         return (negative/total)*100;
 
       case SentimentEnum.not_processed:
+        return 0;
+      case SentimentEnum.empty:
         return 0;
     }
     return 0;
@@ -71,6 +77,8 @@ class AnalyzedRequest {
       case SentimentEnum.not_processed:
         return "";
 
+      case SentimentEnum.empty:
+        return "Nothing found for this request";
     }
     return "";
   }

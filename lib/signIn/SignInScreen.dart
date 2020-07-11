@@ -25,25 +25,17 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void initState() {
     super.initState();
-    _checkPermission();
+    _loginIn=UserService.checkIfUserAlreadyLoggedIn(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
 
-    _loginIn=UserService.checkIfUserAlreadyLoggedIn(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: new Center(
-              child: new Text(
-        "Sign In",
-        style: TextStyle(fontSize: 25),
-        textAlign: TextAlign.center,
-      ))),
       resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
@@ -81,15 +73,44 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),));
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
-          return Spinner.startSpinner(Colors.white);
+          return Center(
+            child: Image.asset('assets/app_logo_white.png',
+                fit: BoxFit.fitWidth),
+          );
         }
         else if(asyncSnapshot.hasError){
           return Text("Error : ${asyncSnapshot.hasError}");
         }else {
-          return _generateSignInPageBody();
+          return _generateSignInScaffold();
         }
       },
     );
+  }
+
+  Widget _generateSignInScaffold(){
+    return
+      Scaffold(
+        appBar: AppBar(
+            title: new Center(
+                child: new Text(
+                  "Sign In",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ))),
+        resizeToAvoidBottomPadding: false,
+        body: Stack(
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                  gradient: new LinearGradient(
+                      colors: [Colors.blue, const Color(0xFF21f3e7)],
+                      begin: FractionalOffset.topLeft,
+                      end: FractionalOffset.bottomRight)),
+            ),
+            _generateSignInPageBody()
+          ],
+        ),
+      );
   }
 
   Widget _generateSignInPageBody() {
@@ -246,21 +267,6 @@ class _SignInScreenState extends State<SignInScreen> {
         ],
       ),
     );
-  }
-
-
-  _checkPermission() async {
-    PermissionName internetPermission = PermissionName.Internet;
-    PermissionStatus permission = await Permission.getSinglePermissionStatus(internetPermission);
-    if(!_isPermissionGranted(permission)){
-      var permissionStatus = await Permission.requestSinglePermission(internetPermission);
-      if(!_isPermissionGranted(permissionStatus))
-        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-    }
-  }
-
-  _isPermissionGranted(PermissionStatus permissionStatus){
-    return permissionStatus==PermissionStatus.always ||  permissionStatus==PermissionStatus.allow;
   }
 
 }

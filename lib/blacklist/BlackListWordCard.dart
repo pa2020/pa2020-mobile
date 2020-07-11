@@ -23,6 +23,7 @@ class BlackListWordCard{
           Container(
             padding: EdgeInsets.all(5),
             child: Text(word.sentence,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 17,
               ),
