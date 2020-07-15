@@ -17,6 +17,8 @@ class RequestResponse {
   }
 
   getSentiment() {
+    if(neutral==positive && positive==negative)
+      return SentimentEnum.empty;
     if (neutral > positive &&
         neutral > negative)
       return SentimentEnum.neutral;

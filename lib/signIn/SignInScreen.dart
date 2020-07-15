@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:noticetracker/signIn/LoginForm.dart';
 import 'package:noticetracker/user/UserService.dart';
 import 'package:noticetracker/util/AlertDialogDesign.dart';
-import 'package:permission/permission.dart';
 
 import '../util/Spinner.dart';
 
@@ -21,11 +20,13 @@ class _SignInScreenState extends State<SignInScreen> {
 
   bool _obscureTextPwd = true;
 
+  bool _spinner = false;
+
 
   @override
   void initState() {
     super.initState();
-    _loginIn=UserService.checkIfUserAlreadyLoggedIn(context);
+    _loginIn=UserService.checkIfUserAlreadyLoggedIn(context).whenComplete(() => _spinner=true);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -73,6 +74,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),));
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
+          if(_spinner){
+            return Spinner.startSpinner(Colors.blue);
+          }
           return Center(
             child: Image.asset('assets/app_logo_white.png',
                 fit: BoxFit.fitWidth),

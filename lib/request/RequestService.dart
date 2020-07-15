@@ -65,6 +65,15 @@ class RequestService {
   }
 
   static RequestResponse _parseResponseForRequestResponse(jsonDecode) {
+    if(jsonDecode["positive"] is int){
+      return RequestResponse(
+          jsonDecode["positive"].toDouble(),
+          jsonDecode["negative"].toDouble(),
+          jsonDecode["neutral"].toDouble(),
+          jsonDecode["total"],
+          jsonDecode["word"],
+          jsonDecode["request_id"]);
+    }
     return RequestResponse(
         jsonDecode["positive"],
         jsonDecode["negative"],

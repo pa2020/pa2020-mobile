@@ -81,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
         else if(asyncSnapshot.hasError){
           return Text("Error : ${asyncSnapshot.hasError}");
         }else {
-          print(asyncSnapshot);
+
           return _showResponse(asyncSnapshot);
         }
       },
@@ -90,6 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _showResponse(AsyncSnapshot asyncSnapshot) {
     RequestResponse requestResponse = asyncSnapshot.data;
+
     switch (requestResponse.getSentiment()) {
       case SentimentEnum.positive:
         return Column(
@@ -124,7 +125,10 @@ class _SearchScreenState extends State<SearchScreen> {
       case SentimentEnum.not_processed:
         return Column(
           children: <Widget>[
-            Text("Not processed"),
+            Container(
+              padding: EdgeInsets.all(10),
+                child: Text("Not processed",
+                    style: TextStyle(color: Colors.red))),
             Image.asset('assets/sentiment_meter_not_processed.png',
                 fit: BoxFit.fitWidth),
           ],
@@ -133,16 +137,20 @@ class _SearchScreenState extends State<SearchScreen> {
       case SentimentEnum.empty:
         return Column(
           children: <Widget>[
-            Text("Not processed"),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Text("Nothing found for your request",
+              style: TextStyle(color: Colors.red),),
+            ),
             Image.asset('assets/sentiment_meter.png',
                 fit: BoxFit.fitWidth),
           ],
         );
 
       default:
-        return SingleChildScrollView(
-          child: Image.asset('assets/sentiment_meter_not_processed.png',
-              fit: BoxFit.fitWidth),
+        return Column(
+          children: <Widget>[Image.asset('assets/sentiment_meter_not_processed.png',
+              fit: BoxFit.fitWidth),],
         );
     }
   }

@@ -97,6 +97,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
       case "Negativity" :
         requests =RequestService.sortAndFilterListByNegativity(requests);
         break;
+
+      case "Date" :
+        requests =RequestService.sortAndFilterListByDate(requests);
+        break;
     }
     if(!_isAscending)
       requests=requests.reversed.toList();
