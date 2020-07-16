@@ -111,15 +111,11 @@ class UserService {
 
   static registerUser(UserDto userDto, BuildContext context) async {
     var response = await _registerUserRequest(userDto);
-    var res = response.body;
-    print(res);
+    print(response.statusCode);
     if (response.statusCode != 200) {
       throw new Exception("Can't register user.");
     } else {
-      var jsonRes = jsonDecode(response.body);
-      _saveJsonInfoInSharedPref(
-          jsonRes, userDto.username, userDto.password, true);
-      Navigator.of(context).pushNamed("/signIn");
+      logUser(new LoginForm(userDto.password, userDto.username), true, context);
     }
   }
 
@@ -127,7 +123,8 @@ class UserService {
     var response = await _updateUserProfile(userDto);
     if (response.statusCode != 200) {
       throw new Exception("Can't update profil");
-    } else {      var jsonRes = jsonDecode(response.body);
+    } else {
+      var jsonRes = jsonDecode(response.body);
 
       SharedPreferenceService.setToken(jsonRes["token"]);
       SharedPreferenceService.setId(jsonRes["id"]);

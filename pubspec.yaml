@@ -17,7 +17,6 @@ dependencies:
   http: ^0.12.1
   fluttertoast: ^4.0.0
   flutter_spinkit: ^4.1.2
-  permission: ^0.1.7
   flutter_launcher_icons: ^0.7.5
 
 

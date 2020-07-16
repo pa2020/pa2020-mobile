@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:noticetracker/user/UserDto.dart';
 import 'package:noticetracker/user/UserService.dart';
 import 'package:noticetracker/util/AlertDialogDesign.dart';
+import 'package:noticetracker/util/Spinner.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -19,6 +20,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscureTextPwd1 = true;
   bool _obscureTextPwd2 = true;
 
+  bool _spinner=false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   colors: [Colors.blue, const Color(0xFF21f3e7)],
                   begin: FractionalOffset.topLeft,
                   end: FractionalOffset.bottomRight)),
-          child: ListView(scrollDirection: Axis.vertical, children: <Widget>[
+          child: _spinner?Spinner.startSpinner(Colors.white):ListView(scrollDirection: Axis.vertical, children: <Widget>[
             Container(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -253,7 +256,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: RaisedButton(
                         padding: EdgeInsets.symmetric(
                             vertical: 15.0, horizontal: 50.0),
-                        onPressed: () {
+                        onPressed: () async {
                           if (oneFieldIsEmpty()) {
                             showDialog(context: context,
                                 barrierDismissible: true,
@@ -285,7 +288,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             );
                           } else {
                             try{
-                              UserService.registerUser(
+                              Future futureRegister = UserService.registerUser(
                                   new UserDto(
                                       emailController.text,
                                       firstNameController.text,
@@ -293,17 +296,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       password1Controller.text,
                                       new List.from(["client"]),
                                       usernameController.text),
-                                  context).whenComplete((){
+                                  context);
+                              _spinner=true;
+                              await futureRegister;
+                              _spinner=false;
+                              showDialog(context: context,
+                                  barrierDismissible: true,
+                                  builder: (BuildContext context){
+                                    return AlertDialogDesign.goodAlertDialog(context,"The user is register", "Registration complete");
+                                  }
+                              );
 
-                                    showDialog(context: context,
-                                        barrierDismissible: true,
-                                        builder: (BuildContext context){
-                                      return AlertDialogDesign.goodAlertDialog(context,"The user is register", "Registration complete");
-                                    }
-                                );
-
-                              });
                             }on Exception catch(e){
+                              _spinner=false;
                               showDialog(context: context,
                                   barrierDismissible: true,
                                   builder: (BuildContext context){

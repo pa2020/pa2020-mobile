@@ -19,60 +19,58 @@ class WordCard{
       decoration: BoxDecoration(
         border: Border.all(width: 1.0, color: Colors.blue)
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: GestureDetector(
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Sentence : ",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25),),
-                    Text("${word.sentence}",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 20,
-                    ),)
-                  ],
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                 children: <Widget>[
-                   Text("Occurence : ",
-                     textAlign: TextAlign.left,
-                     style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         fontSize: 25),),
-                   Text("${word.occurrence}",
-                       style: TextStyle(
-                         fontSize: 20,))],
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text("Sentence : ",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25),),
+                        Text("${word.sentence}",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),)
+                      ],
+                    ),
+                  ),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text("Occurence : ",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25),),
+                        Text("${word.occurrence}",
+                            style: TextStyle(
+                              fontSize: 20,))],
+                    ),
+                  )
+                ],
               )
             ],
-          ),
-          Container(
-            child: IconButton(
-              icon: Icon(Icons.open_in_new,
-              color: Colors.blue,),
-              onPressed: (){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => StatsDetailsScreen(word: word)
-                    ));
-              },
-            ),
-          )
-        ],
 
+          ),
+        ),
+        onTap: (){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => StatsDetailsScreen(word: word)
+              ));
+        },
       ),
     );
   }

@@ -75,7 +75,7 @@ class _SignInScreenState extends State<SignInScreen> {
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
           if(_spinner){
-            return Spinner.startSpinner(Colors.blue);
+            return Spinner.startSpinner(Colors.white);
           }
           return Center(
             child: Image.asset('assets/app_logo_white.png',
