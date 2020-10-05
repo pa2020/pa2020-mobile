@@ -12,7 +12,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String _requestSentence = "";
 
   Future<RequestResponse> _getResponse;
-
+  String _radioBtn = "twitter";
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-            _generateFutureBuilder()
+            _generateFutureBuilder(),
+            _generateRadioButton()
           ],
         ),
       )),
@@ -71,8 +72,7 @@ class _SearchScreenState extends State<SearchScreen> {
       builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
         if((asyncSnapshot.connectionState==ConnectionState.done && !asyncSnapshot.hasData)
             || asyncSnapshot.connectionState==ConnectionState.none){
-          return Image.asset('assets/sentiment_meter_not_processed.png',
-              fit: BoxFit.fitWidth);
+          return Text("Go ahead, and send a word to analyze !");
         }
         else if(asyncSnapshot.connectionState!=ConnectionState.done){
           return Spinner.startSpinner(Colors.blue);
@@ -85,6 +85,30 @@ class _SearchScreenState extends State<SearchScreen> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
         }
       },
+    );
+  }
+
+  Widget _generateRadioButton() {
+    return Column(
+      children: [
+        ListTile(
+          title: const Text('Twitter'),
+          leading: Radio(
+            value: _radioBtn,
+            groupValue: _radioBtn,
+            onChanged: (String s) => print(s),
+          ),
+        ),
+        ListTile(
+          title: const Text('Facebook'),
+          leading: Radio(
+            value: "FaceBook",
+            onChanged: (String s) => print(s),
+            groupValue: _radioBtn,
+          ),
+          enabled: false,
+        )
+      ],
     );
   }
 }
