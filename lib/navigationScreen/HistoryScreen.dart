@@ -55,41 +55,34 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget queueRequestWidget = _generateQueueRequestStreamBuilder();
+
+    Widget historyRequestWidget = _generateHistoryRequestStreamBuilde();
+
     return Container(
       padding: EdgeInsets.only(top: 10),
       child: Scaffold(
-        body: StreamBuilder(
-            stream: _streamController1.stream,
-            builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
-              if (asyncSnapshot.hasError)
-                return Center(
-                  child: Text("Error while trying to fetch request!"),
-                );
-              if (asyncSnapshot.connectionState == ConnectionState.waiting)
-                return Spinner.startSpinner(Colors.blue);
-              else {
-                List<Request> list = asyncSnapshot.data as List;
-                if (list.isEmpty)
-                  return Center(
-                    child: Text("Your request history is empty",
-                        textAlign: TextAlign.center),
-                  );
-                else {
-                  return _generateListView(asyncSnapshot.data);
-                }
-              }
-            }),
+        body: ListView(
+          children: [
+            _generateSearchBar(),
+            _generateDropDownWidget(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: queueRequestWidget,
+            ),
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: historyRequestWidget,
+            )
+          ],
+        )
       ),
     );
   }
 
   Widget _generateListView(List<Request> analyzedRequests) {
-    List<Widget> list = [_generateSearchBar(), _generateDropDownWidget()];
-
     analyzedRequests = generateCompleteList(analyzedRequests);
-
-    Widget queueRequestWidget = _generateQueueRequestStreamBuilder();
-    list.add(queueRequestWidget);
 
     Widget expansionTile = ExpansionTile(
       leading: Icon(Icons.check, color: Color(0xFF1565C0)),
@@ -98,8 +91,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           .map((word) => HistoryCard.requestTemplate(word))
           .toList(),
     );
-    list.add(expansionTile);
-    return ListView(children: list);
+    return expansionTile;
   }
 
   List<Request> generateCompleteList(List<Request> requests) {
@@ -202,7 +194,42 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _generateQueueRequestStreamBuilder() {
     return StreamBuilder(
-        stream: _streamController2.stream,
+          stream: _streamController2.stream,
+          builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+            if (asyncSnapshot.hasError)
+              return Center(
+                child: Text("Error while trying to fetch request!"),
+              );
+            if (asyncSnapshot.connectionState == ConnectionState.waiting)
+              return Spinner.startSpinner(Colors.blue);
+            else {
+              Map<int, Request> map = asyncSnapshot.data as Map;
+              if (map.isEmpty)
+                return Center(
+                  child: Text("Your queue is empty", textAlign: TextAlign.center),
+                );
+              else {
+                return _generateRequestExpansionTile(map);
+              }
+            }
+          });
+  }
+
+  Widget _generateRequestExpansionTile(Map<int, Request> reqQueue) {
+    List<Widget> list = new List<Widget>();
+    reqQueue.forEach((key, value) {
+      list.add(RequestQueueCard.requestTemplate(key, value));
+    });
+    return ExpansionTile(
+      leading: Icon(Icons.hourglass_empty, color: Color(0xFF1565C0)),
+      title: Text("Waiting queue"),
+      children: list
+    );
+  }
+
+  Widget _generateHistoryRequestStreamBuilde() {
+    return StreamBuilder(
+        stream: _streamController1.stream,
         builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
           if (asyncSnapshot.hasError)
             return Center(
@@ -211,26 +238,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
           if (asyncSnapshot.connectionState == ConnectionState.waiting)
             return Spinner.startSpinner(Colors.blue);
           else {
-            Map<int, Request> map = asyncSnapshot.data as Map;
-            if (map.isEmpty)
+            List<Request> list = asyncSnapshot.data as List;
+            if (list.isEmpty)
               return Center(
-                child: Text("Your queue is empty", textAlign: TextAlign.center),
+                child: Text("Your request history is empty",
+                    textAlign: TextAlign.center),
               );
             else {
-              return _generateRequestQueueListView(map);
+              return _generateListView(asyncSnapshot.data);
             }
           }
         });
-  }
-
-  Widget _generateRequestQueueListView(Map<int, Request> reqQueue) {
-    List<Widget> list = new List<Widget>();
-    reqQueue.forEach((key, value) {
-      list.add(RequestQueueCard.requestTemplate(key, value));
-    });
-    return ExpansionTile(
-        leading: Icon(Icons.hourglass_empty, color: Color(0xFF1565C0)),
-        title: Text("Waiting queue"),
-        children: list);
   }
 }

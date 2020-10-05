@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:noticetracker/util/Spinner.dart';
-import 'package:noticetracker/enumerate/EmotionEnum.dart';
 import 'package:noticetracker/request/RequestResponse.dart';
 import 'package:noticetracker/request/RequestService.dart';
 
@@ -82,76 +81,10 @@ class _SearchScreenState extends State<SearchScreen> {
           return Text("Error : ${asyncSnapshot.hasError}");
         }else {
 
-          return _showResponse(asyncSnapshot);
+          return Text("Your request has been sent !",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
         }
       },
     );
-  }
-
-  Widget _showResponse(AsyncSnapshot asyncSnapshot) {
-    RequestResponse requestResponse = asyncSnapshot.data;
-
-    switch (requestResponse.getSentiment()) {
-      case SentimentEnum.positive:
-        return Column(
-          children: <Widget>[
-            Text("Positive at ${requestResponse.positive.toStringAsFixed(2)}%",
-              textAlign: TextAlign.center,),
-            Image.asset('assets/sentiment_meter_positive.png',
-                fit: BoxFit.fitWidth),
-          ],
-        );
-
-      case SentimentEnum.neutral:
-        return Column(
-          children: <Widget>[
-            Text("Neutral at ${requestResponse.neutral.toStringAsFixed(2)}%",
-              textAlign: TextAlign.center,),
-            Image.asset('assets/sentiment_meter_neutral.png',
-                fit: BoxFit.fitWidth),
-          ],
-        );
-
-      case SentimentEnum.negative:
-        return Column(
-          children: <Widget>[
-            Text("Negative at ${requestResponse.negative.toStringAsFixed(2)}%",
-            textAlign: TextAlign.center,),
-            Image.asset('assets/sentiment_meter_negative.png',
-                fit: BoxFit.fitWidth),
-          ],
-        );
-
-      case SentimentEnum.not_processed:
-        return Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(10),
-                child: Text("Not processed",
-                    style: TextStyle(color: Colors.red))),
-            Image.asset('assets/sentiment_meter_not_processed.png',
-                fit: BoxFit.fitWidth),
-          ],
-        );
-
-      case SentimentEnum.empty:
-        return Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(10),
-              child: Text("Nothing found for your request",
-              style: TextStyle(color: Colors.red),),
-            ),
-            Image.asset('assets/sentiment_meter.png',
-                fit: BoxFit.fitWidth),
-          ],
-        );
-
-      default:
-        return Column(
-          children: <Widget>[Image.asset('assets/sentiment_meter_not_processed.png',
-              fit: BoxFit.fitWidth),],
-        );
-    }
   }
 }
